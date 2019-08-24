@@ -1,0 +1,123 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.zf.plugins.GitCommand'
+    id "com.jfrog.bintray" version "1.8.4"
+}
+
+def bintrayConfigFile = new File("D:\\Users\\Lenovo\\Desktop\\APP\\buildScript\\bintrayConfig.gradle")
+if (bintrayConfigFile.exists()) {
+    apply from: bintrayConfigFile.absolutePath
+}
+
+group 'com.zf.publish.app.market.huawei'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.6'
+
+    // https://mvnrepository.com/artifact/org.apache.httpcomponents/httpmime
+    compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.6'
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.8.5'
+    // https://mvnrepository.com/artifact/commons-cli/commons-cli
+    compile group: 'commons-cli', name: 'commons-cli', version: '1.4'
+}
+
+
+def isSnapshot = false
+
+version '1.0.2'
+def _versionCode = 1
+
+if (isSnapshot) {
+    version(version + "-SNAPSHOT")
+}
+
+
+def gitUrl = "https://github.com/903600017/PublishAppHuaWeiMarketSDK.git"
+def siteUrl = gitUrl
+
+
+gitConfig {
+    versionCode _versionCode
+    versionName version
+    changedLogFilePath file("config/log.txt").absolutePath
+    workDirPath project.projectDir.absolutePath
+    repositoryNames 'origin'
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            artifactId 'PublishAppHuaWeiMarketSDK'
+            artifact sourcesJar {
+                classifier "sources"
+            }
+
+            pom {
+                name = "PublishAppHuaWeiMarketSDK"
+                description = "Automatic release of SDK for app application market in Huawei"
+                url = siteUrl
+                licenses {
+                    license {
+                        name = "The Apache License, Version 2.0"
+                        url = "https://raw.githubusercontent.com/903600017/PublishAppHuaWeiMarketSDK/master/LICENSE"
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "zf"
+                        name = "zf"
+                        email = "903600017@qq.com"
+                    }
+                }
+
+                organization {
+                    name = "zf"
+                    url = "https://github.com/903600017"
+                }
+            }
+        }
+    }
+
+    repositories {
+        maven {
+            url = uri('E:\\mvn-repo\\plugins\\repo')
+        }
+    }
+}
+
+bintray {
+    user = BINTRAY_USER
+    key = BINTRAY_API_KEY
+    publications 'mavenJava'
+    pkg {
+        repo = 'maven'
+        name = 'PublishAppHuaWeiMarketSDK'
+        userOrg = 'zf'
+        licenses = ['Apache-2.0']
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
