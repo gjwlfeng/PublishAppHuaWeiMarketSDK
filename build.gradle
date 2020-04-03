@@ -2,7 +2,6 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'com.zf.plugins.GitCommand'
-    id "com.jfrog.bintray" version "1.8.4"
 }
 
 def bintrayConfigFile = new File("D:\\Users\\Lenovo\\Desktop\\APP\\buildScript\\bintrayConfig.gradle")
@@ -34,7 +33,7 @@ dependencies {
 
 def isSnapshot = false
 
-version '1.0.2'
+version '1.0.0'
 def _versionCode = 1
 
 if (isSnapshot) {
@@ -98,24 +97,11 @@ publishing {
 
     repositories {
         maven {
-            url = uri('E:\\mvn-repo\\plugins\\repo')
+            url = uri('E:\\mvn-repo\\repo')
         }
     }
 }
 
-bintray {
-    user = BINTRAY_USER
-    key = BINTRAY_API_KEY
-    publications 'mavenJava'
-    pkg {
-        repo = 'maven'
-        name = 'PublishAppHuaWeiMarketSDK'
-        userOrg = 'zf'
-        licenses = ['Apache-2.0']
-        websiteUrl = siteUrl
-        vcsUrl = gitUrl
-    }
-}
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
